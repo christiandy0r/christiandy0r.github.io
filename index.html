@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geo — AI Systems Builder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --border: #2a2a30;
+      --accent: #7c6bff;
+      --accent2: #00e5a0;
+      --text: #e8e8f0;
+      --muted: #8888a0;
+      --card: #1c1c22;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(13,13,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .logo { font-weight: 700; font-size: 1rem; letter-spacing: 0.05em; color: var(--accent); }
+    nav ul { list-style: none; display: flex; gap: 2rem; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 8rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(124,107,255,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(124,107,255,0.3);
+      border-radius: 999px;
+      padding: 0.3rem 1rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #9b8cff; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .stat-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+    .stat { }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent2);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* SECTIONS */
+    section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 3rem;
+    }
+
+    /* PROJECT CARDS */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+    .card-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .card-link {
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid rgba(124,107,255,0.3);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      transition: all 0.2s;
+    }
+    .card-link:hover { background: rgba(124,107,255,0.12); }
+    .card-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(0,229,160,0.1);
+      color: var(--accent2);
+      border: 1px solid rgba(0,229,160,0.2);
+      margin-bottom: 1rem;
+    }
+
+    /* STACK */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .stack-group {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+    .stack-group h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .stack-group ul { list-style: none; }
+    .stack-group li {
+      font-size: 0.9rem;
+      color: var(--muted);
+      padding: 0.25rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .stack-group li::before { content: '·'; color: var(--accent); }
+
+    /* CONTACT */
+    .contact-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-box::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,107,255,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .contact-box h3 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .contact-box p { color: var(--muted); margin-bottom: 2rem; }
+    .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      .stat-row { gap: 1.5rem; }
+      .contact-box { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="logo">geo.dev</span>
+    <ul>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-tag">AI Systems Builder</span>
+    <h1>I build <span>autonomous</span><br>AI platforms.</h1>
+    <p>22 agents running ops, research, and execution so nothing falls through the cracks. Based in the US. Open to senior AI/ML roles.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">See Projects</a>
+      <a href="https://github.com/christiandy0r" class="btn btn-outline" target="_blank">GitHub</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-num">22</div>
+        <div class="stat-label">Autonomous Agents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Active Projects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">4</div>
+        <div class="stat-label">AI Apps in Production</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-tag">What I Build</div>
+    <h2 class="section-title">Active Projects</h2>
+    <p class="section-sub">End-to-end AI systems — not demos. Each one runs in production and solves a real problem.</p>
+
+    <div class="projects-grid">
+
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <span class="card-badge">Active</span>
+        <h3>jobscraper</h3>
+        <p>Full-cycle automated job search — scrape listings, score against ATS criteria, tailor resume, and submit applications. Fully headless, runs daily.</p>
+        <div class="card-links">
+          <a href="https://github.com/christiandy0r/jobscraper" class="card-link" target="_blank">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎙️</div>
+        <span class="card-badge">Active</span>
+        <h3>AI Sales Interview Coach</h3>
+        <p>Voice + text interview practice platform with realistic AI personas (Charlie & Anna), real-time scoring, and session replay. Built on Claude + ElevenLabs.</p>
+        <div class="card-links">
+          <a href="https://github.com/christiandy0r/ai-sales-interview-coach" class="card-link" target="_blank">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <span class="card-badge">Active</span>
+        <h3>Edge Engine</h3>
+        <p>Futures trading edge platform — statistical edge reports on MNQ, Kronos ML price forecasting, live news sentiment feed, and an AI co-pilot for trade decisions.</p>
+        <div class="card-links">
+          <span class="card-link">Private</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <span class="card-badge">Active</span>
+        <h3>ZECC Command Center</h3>
+        <p>Internal ops dashboard that registers every project, agent, and schedule. Single pane of glass for the entire AI stack — health checks, blueprints, and logs.</p>
+        <div class="card-links">
+          <span class="card-link">Private</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎬</div>
+        <span class="card-badge">Active</span>
+        <h3>3D Parallax Generator</h3>
+        <p>AI-powered video marketing pipeline with a visual editor — templates, depth maps, parallax animation, and versioned output. Runs on Claude + FFmpeg.</p>
+        <div class="card-links">
+          <span class="card-link">Private</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="section-tag">Tech</div>
+    <h2 class="section-title">Stack</h2>
+    <p class="section-sub">Production-grade infrastructure — not notebooks.</p>
+
+    <div class="stack-grid">
+      <div class="stack-group">
+        <h4>Backend</h4>
+        <ul>
+          <li>FastAPI</li>
+          <li>Python</li>
+          <li>SQLite / ChromaDB</li>
+          <li>Playwright</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <h4>AI / LLMs</h4>
+        <ul>
+          <li>Claude API (Sonnet 4.6)</li>
+          <li>Prompt caching</li>
+          <li>XML-structured prompts</li>
+          <li>Semantic recall</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <h4>Infrastructure</h4>
+        <ul>
+          <li>PM2</li>
+          <li>GitHub Actions CI</li>
+          <li>Cloudflare tunnels</li>
+          <li>launchd</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <h4>Agents & Ops</h4>
+        <ul>
+          <li>22 autonomous agents</li>
+          <li>Telegram delivery</li>
+          <li>Ops log pipeline</li>
+          <li>Obsidian export</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-box">
+      <h3>Let's talk.</h3>
+      <p>Open to senior AI/ML and platform engineering roles. I move fast and ship real things.</p>
+      <div class="contact-links">
+        <a href="mailto:geokwai05@gmail.com" class="btn btn-primary">Email Me</a>
+        <a href="https://github.com/christiandy0r" class="btn btn-outline" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built by Geo — AI Systems Builder &nbsp;·&nbsp; 2026
+  </footer>
+
+</body>
+</html>
